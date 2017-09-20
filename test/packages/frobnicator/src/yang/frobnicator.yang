@@ -2,71 +2,12 @@ module frobnicator {
   namespace "http://www.example.com/ns/frobnicator";
   prefix frb;
 
-  import tailf-common {
-    prefix tailf;
-  }
-  import ietf-inet-types {
-    prefix inet;
-  }
-
-  rpc hello {
-    tailf:exec "echo" {
-      tailf:args "result hello";
-    }
-    output {
-      leaf result {
-        type string;
-      }
-    }
-  }
+  description "A made up device model for testing.";
 
   container frobnicator {
-
-    choice empty {
-      description "test for #13160";
-    }
-
-    tailf:action frobnicate {
-      tailf:exec "echo" {
-        tailf:args "ok __LEAF";
-      }
-      output {
-        leaf ok {
-          type empty;
-        }
-      }
-    }
-
-    container validate-ab {
-      presence "";
-      leaf a {
-        type uint32;
-      }
-      container b {
-        when "../a > 42";
-        leaf b {
-          type string;
-        }
-      }
-    }
-
-    choice choice-10 {
-      leaf accept-data {
-        description
-          "Accept packets destined for virtual IP address";
-        type empty;
-      }
-      leaf no-accept-data {
-        description
-          "Don't accept packets destined for virtual IP address";
-        type empty;
-      }
-    }
-
     leaf system-name {
       type string;
     }
-
     choice foo {
       leaf a {
         type string;
@@ -75,296 +16,24 @@ module frobnicator {
         type uint32;
       }
     }
-
-    choice bar {
-       container c {
-          leaf cc {
-             type string;
-          }
-       }
-       container d {
-          list dd1 {
-             key name;
-             leaf name {
-                type uint32;
-             }
-             leaf dd2 {
-                type string;
-             }
-          }
-       }
-       leaf-list ee {
-         ordered-by user;
-         type string;
-       }
-       leaf-list ff {
-         type string;
-       }
-       case ugh {
-         leaf gg { type uint32; }
-         choice baz {
-           case huh {
-             leaf hh { type empty; }
-           }
-           leaf jj { type empty; }
-         }
-       }
-    }
-
     list rules {
       key name;
       ordered-by user;
-
       leaf name {
         type string;
       }
-
       leaf value {
         type uint32;
       }
-
       leaf action {
         type enumeration {
           enum allow;
           enum deny;
-          enum yougogirl;
         }
       }
       leaf drop {
         type empty;
       }
     }
-
-    leaf important-rule {
-      type leafref {
-        path "/frb:frobnicator/frb:rules/frb:name";
-      }
-    }
-
-    leaf-list theleaflist {
-       type uint32;
-    }
-
-    container p-container {
-       presence "";
-
-       leaf tmo {
-          type int32;
-       }
-    }
-
-    leaf the-empty-leaf {
-      type empty;
-    }
-
-    // Stuff for service test
-    list syslog-server {
-      key "name";
-
-      leaf name {
-        type inet:host;
-      }
-      leaf enabled {
-        type empty;
-      }
-
-      list selector {
-        key "name";
-        leaf name {
-          type int32;
-        }
-        leaf negate {
-          type empty;
-        }
-        leaf comparison {
-          type enumeration {
-            enum "same-or-higher";
-            enum "same";
-          }
-        }
-        leaf level {
-          type syslogLevel;
-        }
-        leaf-list facility {
-          type syslogFacility;
-          min-elements 1;
-          max-elements "8";
-        }
-      }
-    }
-  }
-  typedef syslogLevel {
-    type enumeration {
-      enum "emerg";
-      enum "alert";
-      enum "crit";
-      enum "err";
-      enum "warning";
-      enum "notice";
-      enum "info";
-      enum "debug";
-      enum "none";
-      enum "all";
-    }
-  }
-
-  typedef syslogFacility {
-    type enumeration {
-      enum "auth";
-      enum "authpriv";
-      enum "cron";
-      enum "daemon";
-      enum "ftp";
-      enum "kern";
-      enum "lpr";
-      enum "mail";
-      enum "news";
-      enum "security";
-      enum "syslog";
-      enum "user";
-      enum "uucp";
-      enum "local0";
-      enum "local1";
-      enum "local2";
-      enum "local3";
-      enum "local4";
-      enum "local5";
-      enum "local6";
-      enum "local7";
-      enum "all";
-    }
-  }
-
-  container service {
-    tailf:info "Services configuration";
-
-    typedef vpls-id {
-      type union {
-        type string {
-          length "1..64";
-          tailf:info "<string id>;; max length 64";
-        }
-        type uint32 {
-          range "1..2147483647";
-          tailf:info "<numeric id>;;[1..2147483647]";
-        }
-      }
-    }
-
-    // service / vpls *
-    list vpls {
-      tailf:info "Provision a Virtual Private LAN Service";
-
-      key service-id;
-      leaf service-id {
-        type vpls-id;
-      }
-
-      list sap {
-        tailf:info "Provision a SAP";
-
-        key sap-id;
-
-        leaf sap-id {
-          tailf:info "<sap-id>;;different formats depending on port mode";
-          type string;
-        }
-
-        container egress {
-
-          // service / vpls * / sap * / egress / agg-rate-limit
-          leaf  agg-rate-limit {
-            type uint32 {
-              range "1..40000000";
-            }
-          }
-
-          container filter {
-            uses filter-choice;
-          }
-
-          // service / vpls * / sap  * / egress / multicast-group
-          leaf multicast-group {
-            type string;
-          }
-        }
-
-        container ingress {
-
-          // service / vpls * / sap * / ingress filter
-          container filter {
-            uses filter-choice;
-          }
-
-          // service / vpls * / sap  * / ingress / match-qinq-dot1p
-          leaf match-qinq-dot1p {
-            tailf:info "Define 802.1P bits to match in QinQ SAP's";
-
-            type enumeration {
-              enum top;
-              enum bottom;
-            }
-          }
-
-          // service / vpls * / sap  * / ingress / qos
-          leaf qos {
-            tailf:info "Apply ingress qos policy";
-            type uint16;
-          }
-
-          // service / vpls * / sap  * / ingress / scheduler-override
-          container scheduler-override {
-            tailf:info "Apply a scheduler override";
-
-            leaf scheduler {
-              type string;
-            }
-          }
-
-          // service / vpls * / sap  * / ingress / scheduler-policy
-          leaf scheduler-policy {
-            tailf:info "Specify a scheduler-policy";
-            type string;
-          }
-
-          // service / vpls * / sap  * / ingress / vlan-translation
-          leaf vlan-translation {
-            tailf:info "Apply Ingress Vlan Translation";
-
-            type union {
-              type enumeration {
-                enum copy-outer;
-              }
-              type uint16 {
-                range "0..4094";
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  grouping filter-choice {
-    choice filter {
-      // filter ip
-      leaf ip {
-        tailf:info "<ip-filter-id>;;[1..65535]|<name:64 char max>";
-        type string;
-      }
-
-      // filter ipv6
-      leaf ipv6 {
-        tailf:info "<ipv6-filter-id>;;[1..65535]|<name:64 char max>";
-        type string;
-      }
-
-      // filter mac
-      leaf mac {
-        tailf:info "<mac-filter-id>;;[1..65535]|<name:64 char max>";
-        type string;
-      }
-    }
   }
 }
-
