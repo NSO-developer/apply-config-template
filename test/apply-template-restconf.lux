@@ -1,0 +1,80 @@
+[doc test apply-template action]
+
+[shell setup]
+    !ncs-netsim reset
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+    !ncs-setup --reset
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+    !ncs-netsim start
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+    !(cd ncs-runtime && ncs)
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+
+[global HEADERS=-H "Accept: application/yang-data+json" -H "Content-Type: application/yang-data+json"]
+[global AUTH=-u admin:admin]
+[global URL=http://localhost:8080/restconf/data]
+
+
+[shell rest]
+    -[Ee]rror
+
+    !curl ${AUTH} ${HEADERS} -X POST ${URL}/tailf-ncs:devices/sync-from
+    ??"result": true
+    ??"result": true
+    ?SH-PROMPT
+
+    !curl ${AUTH} ${HEADERS} -X POST ${URL}/apply-config-template:template/apply-config-template -T - <<EOF
+    !{ "apply-config-template": {
+    !    "name": "frobnicator-foo",
+    !    "variable": { "name": "DEVICE", "value": "frob0" }
+    !  }
+    !}
+    !EOF
+#    ??"result": "ok"
+    ?SH-PROMPT
+
+
+    [local FROB0_CONFIG=/tailf-ncs:devices/device=frob0/config]
+
+
+    !curl ${AUTH} ${HEADERS} -X GET ${URL}${FROB0_CONFIG}/frobnicator:frobnicator/system-name
+    ?SH-PROMPT
+
+    !curl ${AUTH} ${HEADERS} -X GET ${URL}${FROB0_CONFIG}/frobnicator:frobnicator/a
+    ?SH-PROMPT
+
+    !curl ${AUTH} ${HEADERS} -X GET ${URL}${FROB0_CONFIG}/frobnicator:frobnicator/b
+    ?SH-PROMPT
+
+
+
+
+[cleanup]
+    !ncs-netsim stop
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==[0-9][0-9]*==
+    ?SH-PROMPT
+
+    !ncs --stop
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==[0-9][0-9]*==
+    ?SH-PROMPT
+

@@ -1,0 +1,131 @@
+[doc test apply-template action]
+
+[shell setup]
+    !ncs-netsim reset
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+    !ncs-setup --reset
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+    !ncs-netsim start
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+    !(cd ncs-runtime && ncs)
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+
+
+[shell nc-console]
+    -error
+    !netconf-console -i
+    ?Enter a NETCONF operation
+"""!
+<action xmlns="http://tail-f.com/ns/netconf/actions/1.0">
+  <data>
+    <devices xmlns="http://tail-f.com/ns/ncs">
+      <sync-from/>
+    </devices>
+  </data>
+</action>
+
+"""
+    ??<device>frob0</device>
+    ??<result>true</result>
+    ??<device>frob1</device>
+    ??<result>true</result>
+    ?Enter a NETCONF operation
+
+
+"""!
+    <get-config>
+      <source><running/></source>
+      <filter>
+        <devices xmlns="http://tail-f.com/ns/ncs">
+          <device>
+            <name>frob0</name>
+            <config>
+              <frobnicator xmlns="http://www.example.com/ns/frobnicator"/>
+                <system-name/>
+                <a/>
+                <b/>
+            </config>
+          </device>
+        </devices>
+      </filter>
+    </get-config>
+
+"""
+    ?Enter a NETCONF operation
+
+
+"""!
+<action xmlns="http://tail-f.com/ns/netconf/actions/1.0">
+  <data>
+    <template xmlns="http://example.com/ns/apply-config-template">
+      <apply-config-template>
+        <name>frobnicator-foo</name>
+        <variable>
+          <name>DEVICE</name>
+          <value>frob0</value>
+        </variable>
+      </apply-config-template>
+    </template>
+  </data>
+</action>
+
+"""
+    ??<ok/>
+    ?Enter a NETCONF operation
+
+
+"""!
+    <get-config>
+      <source><running/></source>
+      <filter>
+        <devices xmlns="http://tail-f.com/ns/ncs">
+          <device>
+            <name>frob0</name>
+            <config>
+              <frobnicator xmlns="http://www.example.com/ns/frobnicator"/>
+                <system-name/>
+                <a/>
+                <b/>
+            </config>
+          </device>
+        </devices>
+      </filter>
+    </get-config>
+
+"""
+    ?<system-name.*>foobar-frob0</system-name>
+    ?<b>99</b>
+    ?Enter a NETCONF operation
+
+
+
+
+[cleanup]
+    !ncs-netsim stop
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==[0-9][0-9]*==
+    ?SH-PROMPT
+
+    !ncs --stop
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==[0-9][0-9]*==
+    ?SH-PROMPT
+

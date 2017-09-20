@@ -1,0 +1,50 @@
+module apply-config-template {
+  namespace "http://example.com/ns/apply-config-template";
+  prefix apply-config-template;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  description
+    "An Example action which can apply config templates in NSO.";
+
+  revision 2017-09-19 {
+    description "Initial revision.";
+  }
+
+  container template {
+    tailf:action apply-config-template {
+      tailf:actionpoint apply-config-template-action;
+      input {
+        leaf name {
+          description "The name of the template";
+          type string;
+          mandatory true;
+        }
+        leaf context-node {
+          description
+            "A keypath to the context node. The context node will be
+             used for all XPath expressions in the template.";
+          type string;
+          default "/";
+        }
+        list variable {
+          description "A list of variable bindings passed to the template.";
+          key name;
+          leaf name {
+            description "Variable name";
+            type string {
+              length 1..1024;
+            }
+          }
+          leaf value {
+            description "Variable value";
+            type string;
+            default "";
+          }
+        }
+      }
+    }
+  }
+}

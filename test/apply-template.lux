@@ -1,0 +1,116 @@
+[doc test apply-template action]
+
+[shell setup]
+    !ncs-netsim reset
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+    !ncs-setup --reset
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+    !ncs-netsim start
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+    !(cd ncs-runtime && ncs)
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==0==
+    ?SH-PROMPT
+
+
+[shell cli]
+    !ncs_cli -u admin
+    ?connected from
+    ?admin@ncs>
+    -[Ee]rror
+    !set paginate false
+    ??[ok]
+    ?admin@ncs>
+    !request devices sync-from
+    ?result true
+    ?result true
+    ??[ok]
+    ?admin@ncs>
+
+    !configure
+    ?admin@ncs%
+    !request template apply-config-template name frobnicator-foo variable { name DEVICE value frob0 }
+    ??[ok]
+    ?admin@ncs%
+    !request template apply-config-template name frobnicator-foo variable { name DEVICE value frob1 }
+    ??[ok]
+    ?admin@ncs%
+    !compare running brief
+"""???
+ devices {
+     device frob0 {
+         config {
+             frb:frobnicator {
+-                system-name delius;
++                system-name foobar-frob0;
+-                a foo;
++                b 99;
+             }
+         }
+     }
+     device frob1 {
+         config {
+             frb:frobnicator {
+-                system-name delius;
++                system-name foobar;
+-                a foo;
++                b 99;
+             }
+         }
+     }
+ }
+[ok]
+"""
+    ?admin@ncs%
+    !revert no-confirm
+    ??[ok]
+    ?admin@ncs%
+
+    !exit
+    ?admin@ncs>
+
+
+    !request template apply-config-template name frobnicator-foo variable { name DEVICE value frob0 }
+    ??[ok]
+    ?admin@ncs>
+
+    !show configuration devices device frob0 config
+    ?system-name[ ][ ]*foobar-frob0;
+    ?b[ ][ ]*99;
+
+    ??[ok]
+    ?admin@ncs>
+
+
+    !exit
+    ?SH-PROMPT
+
+
+
+
+[cleanup]
+    !ncs-netsim stop
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==[0-9][0-9]*==
+    ?SH-PROMPT
+
+    !ncs --stop
+    ?SH-PROMPT
+    !echo ==$?==
+    ?==[0-9][0-9]*==
+    ?SH-PROMPT
+

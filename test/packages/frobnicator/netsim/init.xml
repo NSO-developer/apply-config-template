@@ -1,0 +1,24 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <frobnicator xmlns="http://www.example.com/ns/frobnicator">
+    <system-name annotation="one small annotation">delius</system-name>
+    <a annotation="annotation on a choice leaf">foo</a>
+    <c>
+      <cc>testing</cc>
+    </c>
+    <rules>
+      <name>http</name>
+      <value>100</value>
+      <action>allow</action>
+    </rules>
+    <rules tags=" insecure terminal ">
+      <name>telnet</name>
+      <value>50</value>
+      <action>deny</action>
+    </rules>
+    <rules tags=" email " annotation="annotation on a list entry">
+      <name>smtp</name>
+      <value>3</value>
+      <action>yougogirl</action>
+    </rules>
+  </frobnicator>
+</config>

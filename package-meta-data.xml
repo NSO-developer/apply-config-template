@@ -1,0 +1,16 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>apply-config-template</name>
+  <package-version>1.0</package-version>
+  <description>
+    Apply Config Template,
+    a package with an action that applies config templates.
+  </description>
+  <ncs-min-version>4.4</ncs-min-version>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>apply_config_template.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

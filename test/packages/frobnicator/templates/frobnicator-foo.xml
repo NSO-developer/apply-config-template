@@ -1,0 +1,14 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <frobnicator xmlns="http://www.example.com/ns/frobnicator">
+          <system-name when="{$DEVICE = 'frob1'}">foobar</system-name>
+          <system-name when="{$DEVICE != 'frob1'}">foobar-{$DEVICE}</system-name>
+          <b>99</b>
+        </frobnicator>
+      </config>
+    </device>
+  </devices>
+</config-template>
