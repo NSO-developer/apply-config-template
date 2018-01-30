@@ -1,0 +1,19 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <frobnicator xmlns="http://www.example.com/ns/frobnicator">
+          <rules>
+            <name>{$NAME}</name>
+            <value when="{($NUMBER > 0) and ($NUMBER &lt; 10)">{$NUMBER}</value>
+            <value when="{$NUMBER > 10}">10</value>
+            <value when="{$NUMBER = ''}">0</value>
+            <action when="{$ALLOW = 'true'}">allow</action>
+            <drop when="{$ALLOW != 'true'}"/>
+          </rules>
+        </frobnicator>
+      </config>
+    </device>
+  </devices>
+</config-template>

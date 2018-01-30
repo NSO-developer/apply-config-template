@@ -61,6 +61,7 @@ Commit complete.
 
 The [test directory](./test/) contains a couple of
 [LuX](https://github.com/hawk/lux) scripts which invoke the action
-from different northbound API:s (CLI, NETCONF, REST, RESTCONF).
+from different northbound API:s (CLI, NETCONF, REST, RESTCONF, and
+Python).
 
 To test, simply run `make test` in the test directory.
