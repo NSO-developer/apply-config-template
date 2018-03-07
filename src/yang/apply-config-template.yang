@@ -21,6 +21,10 @@ module apply-config-template {
     prefix tailf;
   }
 
+  import tailf-ncs {
+    prefix ncs;
+  }
+
   description
     "An Example action which can apply config templates in NSO.";
 
@@ -35,6 +39,9 @@ module apply-config-template {
         leaf name {
           description "The name of the template";
           type string;
+          tailf:non-strict-leafref {
+            path "/ncs:packages/ncs:package/ncs:templates";
+          }
           mandatory true;
         }
         leaf context-node {
